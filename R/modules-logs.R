@@ -106,6 +106,7 @@ logs_ui <- function(id, lan = NULL) {
 #'  bb_x_axis bb_zoom %>% bb_bar_color_manual
 #' @importFrom shiny reactiveValues observe req updateSelectInput updateDateRangeInput reactiveVal outputOptions
 #' @importFrom utils write.table
+#' @importFrom DBI dbReadTable
 logs <- function(input, output, session, sqlite_path, passphrase, config_db,
                  fileEncoding = "", lan = NULL) {
   
@@ -127,12 +128,12 @@ logs <- function(input, output, session, sqlite_path, passphrase, config_db,
       } else {
         conn <- connect_sql_db(config_db)
         on.exit(disconnect_sql_db(conn, config_db))
-        logs_rv$logs <- DBI::dbReadTable(
+        logs_rv$logs <- dbReadTable(
           conn,
           Id(schema = config_db$tables$logs$schema,
              table  = config_db$tables$logs$tablename)
         )
-        logs_rv$users <- DBI::dbReadTable(
+        logs_rv$users <- dbReadTable(
           conn,
           Id(schema = config_db$tables$credentials$schema,
              table  = config_db$tables$credentials$tablename)
