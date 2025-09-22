@@ -127,9 +127,16 @@ logs <- function(input, output, session, sqlite_path, passphrase, config_db,
       } else {
         conn <- connect_sql_db(config_db)
         on.exit(disconnect_sql_db(conn, config_db))
-        logs_rv$logs <- db_read_table_sql(conn, config_db$tables$logs$tablename)
-        logs_rv$users <- read_db_decrypt(conn = conn, name = config_db$tables$credentials$tablename, passphrase = passphrase)
-        
+        logs_rv$logs <- DBI::dbReadTable(
+          conn,
+          Id(schema = config_db$tables$logs$schema,
+             table  = config_db$tables$logs$tablename)
+        )
+        logs_rv$users <- DBI::dbReadTable(
+          conn,
+          Id(schema = config_db$tables$credentials$schema,
+             table  = config_db$tables$credentials$tablename)
+        )
       }
       
       isolate({
